@@ -11,6 +11,12 @@ $(document).ready(
   }
 );
 
+function track_uri(track, artist){
+  search_url = URLEncode('http://ws.spotify.com/search/1/track.json?q=track:"'
+              +track+'"+artist:"' +artist+'"');
+  
+}
+
 function insert_button(){
   var icon_address = chrome.extension.getURL("icon.png");
   $("#mix_interactions").append(
