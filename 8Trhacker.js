@@ -60,7 +60,6 @@ function insert_button(){
 
 function readyButton(){
   var icon_prev_address = chrome.extension.getURL("icon_prev.png");
-  //$("#spotify_prev_button").attr('src')=icon_prev_address;
   $("#spotify_prev_button").attr('src', icon_prev_address);
   console.log("image changed")
 }
