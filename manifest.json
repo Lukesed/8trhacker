@@ -4,7 +4,7 @@
   "description": "Make Spotify playlists from 8tracks playlists",
   "content_scripts": [
     {
-      "matches": ["*.8tracks.com/*"],
+      "matches": ["http://www.8tracks.com/*"],
       "js": ["jquery-1.8.2.min.js","8Trhacker.js"]
     }
   ],
