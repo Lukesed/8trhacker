@@ -4,9 +4,9 @@ $(document).ready(
   function() {
     insert_button()
     setInterval(function(){console.log("scraping");scrapePage();},7000);
-    $("#spotify_button").click(
+    $("#spotify_prev_button").click(
       function(){
-        //stuff to do when clicked button
+        //stuff to do when clicked prev button
         //create a spotify playlist out of the songs
         alert("Creating a Spotify playlist of the current tracks!")
         console.log(songsToPlaylist())
@@ -14,6 +14,11 @@ $(document).ready(
         //open_in_new_tab(songsToPlaylist())
       }     
       );
+    $("#spotify_prev_button").click(
+      function(){
+        //stuff to do when clicked all button
+      }     
+      );  
   }
   );
 
@@ -42,9 +47,14 @@ function track_uri(track, artist){
 
 
 function insert_button(){
-  var icon_address = chrome.extension.getURL("icon.png");
+  var icon_prev_address = chrome.extension.getURL("icon_prev.png");
   $("#mix_interactions").append(
-    '<img id="spotify_button" src='+ icon_address +' alt="some_text">')
+    '<img id="spotify_prev_button" src='+ 
+    icon_prev_address +' alt="some_text">')
+  var icon_all_address = chrome.extension.getURL("icon_all.png");
+  $("#mix_interactions").append(
+    '<img id="spotify_all_button" src='+ 
+    icon_all_address +' alt="some_text">')
 }
 
 function scrapePage(){
