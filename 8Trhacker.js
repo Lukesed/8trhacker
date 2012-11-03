@@ -1,13 +1,21 @@
+$(document).ready(
+  function() {
+    insert_button()
+    var songs = []
+    setInterval(scrapePage(songs),5000);
+    $("#spotify_button").click(
+      function(){
+        //stuff to do when clicked button
+      }     
+    );
+  }
+);
 
-$(document).ready(function() {
-  var songs = []
-  var t= setInterval(scrapePage(songs),5000);
-  
-  $("a").click(function() {
-    alert(songsToString(songs))
-    alert("Hello world!");
-  });
-});
+function insert_button(){
+  var icon_address = chrome.extension.getURL("icon.png");
+  $("#mix_interactions").append(
+    '<img id="spotify_button" src='+ icon_address +' alt="some_text">')
+}
 
 function scrapePage(songs){
   alert("scraping page")
@@ -28,7 +36,6 @@ function scrapePage(songs){
   });  
   alert(songsToString(songs))
   //return songs  
-  
 };
 
 function songsToString(songs){
