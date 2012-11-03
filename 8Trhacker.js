@@ -10,6 +10,11 @@ $(document).ready(
         alert(uri)
         console.log("uri: " + uri)
         //stuff to do when clicked button
+        //create a spotify playlist out of the songs
+        alert("Creating a Spotify playlist of the current tracks!")
+        alert(songsToPlaylist())
+        open_in_new_tab(songsToPlaylist());
+        //open_in_new_tab(songsToPlaylist())
       }     
       );
   }
@@ -57,7 +62,7 @@ function scrapePage(){
           song["title"] = $(this).text()
         }
       });
-      song["uri"] = track_uri(song["title"],song["artist"])
+      song["uri"] = "hello"//track_uri(song["title"],song["artist"])
       //alert(song["artist"]+": "+song["title"])
       songs[idx] = song
     }
@@ -71,4 +76,22 @@ function songsToString(){
     s=s+i+": "+songs[i]["artist"]+": "+songs[i]["title"]+"\n"
   }
   return s
+}
+
+function songsToPlaylist(){
+  s = "spotify:trackset:PlaylistName:"
+  for(i=0;i<Object.keys(songs).length;i++){
+    if (songs[i]["uri"] != ""){
+      s=s+songs[i]["artist"]
+    }
+  }
+  return s
+  //return "spotify:trackset:PlaylistName:49MsPNQCOmxvIYi9AdoPzY,6fUlrsHaz4QfCNF31rk2dU,5KiTsR2h8jnzkvTeucxoAn,6kidUwWb8tB9ktfy7U76iX,6mlUEdb90RqwUisnp65lG7,6KOEK6SeCEZOQkLj5M1PxH,3psrcZoGRaWh6FMGael1NX,3EHLii6bnZxJxsCfLlIb83,0xJtHBdhpdLuClaSQYddI4,6fsdOFwa9lTG7WKL9sEWRU"
+}
+
+
+function open_in_new_tab(url )
+{
+  window.open(url, '_blank');
+  window.focus();
 }
