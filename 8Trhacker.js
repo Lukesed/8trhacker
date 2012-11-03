@@ -39,7 +39,7 @@ function track_uri(track, artist){
     dataType: 'json',
     success:
     function(json){
-      if(json["tracks"]){
+      if(json["tracks"].length!=0){
         console.log(json["tracks"])
         uri = json["tracks"][0]["href"].split(":")[2]
         console.log(uri)
