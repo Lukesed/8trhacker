@@ -15,8 +15,14 @@ $(document).ready(
 function track_uri(track, artist){
   search_url = URLEncode('http://ws.spotify.com/search/1/track.json?q=track:"'
               +track+'"+artist:"' +artist+'"');
-  
+  result_json = getJSON(search_url);
+  if(!result_json.data[0]){
+    return "";
+  } else{
+    result_json["track"][0]["href"].split(":")[2];
+  }
 }
+
 
 function insert_button(){
   var icon_address = chrome.extension.getURL("icon.png");
