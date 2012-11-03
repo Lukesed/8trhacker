@@ -4,7 +4,7 @@ $(document).ready(
   function() {
     insert_button()
     setInterval(function(){console.log("scraping");scrapePage();},7000);
-    $("#spotify_button").click(
+    $("#illegal_spotify_button").click(
       function(){
         //stuff to do when clicked button
         //create a spotify playlist out of the songs
@@ -14,6 +14,16 @@ $(document).ready(
         //open_in_new_tab(songsToPlaylist())
       }     
       );
+    $("#spotify_button").click(
+      function(){
+        //stuff to do when clicked button
+        //create a spotify playlist out of the songs
+        alert("Creating a Spotify playlist of the entire playlist!")
+        console.log(entire_mix_to_playlist())
+        //open_in_new_tab(entire_mix_to_playlist());
+        //open_in_new_tab(songsToPlaylist())
+      }     
+      );    
   }
   );
 
@@ -48,7 +58,6 @@ function insert_button(){
 }
 
 function scrapePage(){
-  console.log(songsToString())
   $("#tracks_played .track .title_artist").each(function(idx){
     if (!(idx in songs)){
       console.log("adding song!")
@@ -75,7 +84,6 @@ function scrapePage(){
       songs[idx] = song
     }
   });  
-  console.log(songsToString())
 };
 
 function songsToString(){
@@ -96,7 +104,42 @@ function songsToPlaylist(){
   output = s.substring(0, s.length-1)
   console.log("spotify url"+output)
   return output
-  //return "spotify:trackset:PlaylistName:49MsPNQCOmxvIYi9AdoPzY,6fUlrsHaz4QfCNF31rk2dU,5KiTsR2h8jnzkvTeucxoAn,6kidUwWb8tB9ktfy7U76iX,6mlUEdb90RqwUisnp65lG7,6KOEK6SeCEZOQkLj5M1PxH,3psrcZoGRaWh6FMGael1NX,3EHLii6bnZxJxsCfLlIb83,0xJtHBdhpdLuClaSQYddI4,6fsdOFwa9lTG7WKL9sEWRU"
+}
+
+function entire_mix_to_playlist(){
+  scrapePage()
+  alert("getting mix")
+  var tracks_span = $('span:contains("tracks"):first');
+  var num_tracks = tracks_span.text().match(/\d+/);
+  var remaining_tracks = num_tracks - songs.length
+  var starting_songs_length = songs.length
+  alert("Total tracks in mix: " + num_tracks);
+  alert("Remaining tracks: " + remaining_tracks);
+  for(i=starting_songs_length;i<num_tracks;i++){
+    $("#now_playing .title_artist").each()
+    var song = {}
+    $(this).children().each(function(index){
+      if (index == 0){
+        raw_title = $(this).text()
+        open_paran = raw_title.indexOf("(")
+        close_paran = raw_title.lastIndexOf(")")
+        if( open!=-1 && close!=-1 ){
+          fixed = raw_title.substring(0,open_paran-1) +
+          raw_title.substring(close_paran+1,raw_title.length)
+        } else {
+          fixed = raw_title
+        }
+        song["title"] = fixed.replace("&", " ")
+      }else{
+        song["artist"] = $(this).text().replace("&", " ")
+      }
+    });
+    href = track_uri(song["title"],song["artist"])
+    song["uri"] = href
+    alert(song["artist"]+": "+song["title"])
+    songs[idx] = song
+    $("#player_skip_button").click();
+  }
 }
 
 
