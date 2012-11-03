@@ -3,16 +3,13 @@ var songs = {}
 $(document).ready(
   function() {
     insert_button()
-    //(function(){alert("scraping");scrapePage();},7000);
+    setInterval(function(){console.log("scraping");scrapePage();},7000);
     $("#spotify_button").click(
       function(){
-        uri = track_uri("fly", "fighters")
-        alert(uri)
-        console.log("uri: " + uri)
         //stuff to do when clicked button
         //create a spotify playlist out of the songs
         alert("Creating a Spotify playlist of the current tracks!")
-        alert(songsToPlaylist())
+        console.log(songsToPlaylist())
         open_in_new_tab(songsToPlaylist());
         //open_in_new_tab(songsToPlaylist())
       }     
@@ -24,7 +21,7 @@ $(document).ready(
 function track_uri(track, artist){
   search_url = encodeURI('http://ws.spotify.com/search/1/track.json?q=track:'
     +track+'+artist:' +artist);
-  alert(search_url)
+  console.log(search_url)
   var uri = ""
   $.ajax({
     url: search_url,
@@ -32,9 +29,11 @@ function track_uri(track, artist){
     dataType: 'json',
     success:
     function(json){
-      console.log(json["tracks"])
-      uri = json["tracks"][0]["href"].split(":")[2]
-      console.log(uri)
+      if(json["tracks"]){
+        console.log(json["tracks"])
+        uri = json["tracks"][0]["href"].split(":")[2]
+        console.log(uri)
+      }
     } 
   });
   console.log("2: " + uri)
@@ -49,25 +48,34 @@ function insert_button(){
 }
 
 function scrapePage(){
-  alert(songsToString())
+  console.log(songsToString())
   $("#tracks_played .track .title_artist").each(function(idx){
     if (!(idx in songs)){
-      alert("adding song!")
+      console.log("adding song!")
       var song = {}
-      
       $(this).children().each(function(index){
         if (index == 0){
-          song["artist"] = $(this).text()
+          raw_title = $(this).text()
+          open_paran = raw_title.indexOf("(")
+          close_paran = raw_title.lastIndexOf(")")
+          if( open!=-1 && close!=-1 ){
+            fixed = raw_title.substring(0,open_paran-1) +
+            raw_title.substring(close_paran+1,raw_title.length)
+          } else {
+            fixed = raw_title
+          }
+          song["title"] = fixed.replace("&", " ")
         }else{
-          song["title"] = $(this).text()
+          song["artist"] = $(this).text().replace("&", " ")
         }
       });
-      song["uri"] = "hello"//track_uri(song["title"],song["artist"])
+      href = track_uri(song["title"],song["artist"])
+      song["uri"] = href
       //alert(song["artist"]+": "+song["title"])
       songs[idx] = song
     }
   });  
-  alert(songsToString())
+  console.log(songsToString())
 };
 
 function songsToString(){
@@ -82,10 +90,12 @@ function songsToPlaylist(){
   s = "spotify:trackset:PlaylistName:"
   for(i=0;i<Object.keys(songs).length;i++){
     if (songs[i]["uri"] != ""){
-      s=s+songs[i]["artist"]
+      s=s+songs[i]["uri"]+','
     }
   }
-  return s
+  output = s.substring(0, s.length-1)
+  console.log("spotify url"+output)
+  return output
   //return "spotify:trackset:PlaylistName:49MsPNQCOmxvIYi9AdoPzY,6fUlrsHaz4QfCNF31rk2dU,5KiTsR2h8jnzkvTeucxoAn,6kidUwWb8tB9ktfy7U76iX,6mlUEdb90RqwUisnp65lG7,6KOEK6SeCEZOQkLj5M1PxH,3psrcZoGRaWh6FMGael1NX,3EHLii6bnZxJxsCfLlIb83,0xJtHBdhpdLuClaSQYddI4,6fsdOFwa9lTG7WKL9sEWRU"
 }
 
