@@ -1,7 +1,7 @@
 
 $(document).ready(function() {
   var songs = []
-  setInterval(scrapePage(songs),5000);
+  var t= setInterval(scrapePage(songs),5000);
   
   $("a").click(function() {
     alert(songsToString(songs))
@@ -11,9 +11,9 @@ $(document).ready(function() {
 
 function scrapePage(songs){
   alert("scraping page")
-  $(".title_artist").each(function(idx){
-    alert(idx)
-    if (idx >= songs.length){
+  $(".title_artist").each(function(){
+   // alert(idx)
+   // if (idx >= songs.length){
       var song = {}
       $(this).children().each(function(index){
         if (index == 0){
@@ -24,10 +24,10 @@ function scrapePage(songs){
       });
       //alert(song["artist"]+": "+song["title"])
       songs.push(song)
-    }
+    //}
   });  
   alert(songsToString(songs))
-  return songs  
+  //return songs  
   
 };
 
