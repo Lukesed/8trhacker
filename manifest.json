@@ -9,7 +9,8 @@
     }
   ],
   "web_accessible_resources": [
-    "icon.png"
+    "icon_all.png",
+    "icon_prev.png"
   ],
   "manifest_version": 2
 }
