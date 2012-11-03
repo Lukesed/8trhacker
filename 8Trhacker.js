@@ -1,22 +1,19 @@
 
 $(document).ready(function() {
   var songs = []
+  setInterval(scrapePage(songs),5000);
   
   $("a").click(function() {
-    alert
+    alert(songsToString(songs))
     alert("Hello world!");
-    setInterval(scrapePage(songs),2000);
   });
-  
-  
-  
-  
 });
 
 function scrapePage(songs){
   alert("scraping page")
-  $(".title_artist").each(function(i){
-    if (i >= songs.length){
+  $(".title_artist").each(function(idx){
+    alert(idx)
+    if (idx >= songs.length){
       var song = {}
       $(this).children().each(function(index){
         if (index == 0){
@@ -29,9 +26,7 @@ function scrapePage(songs){
       songs.push(song)
     }
   });  
-  
-
-  alert(songsToString)
+  alert(songsToString(songs))
   return songs  
   
 };
@@ -41,4 +36,5 @@ function songsToString(songs){
   for(i=0;i<songs.length;i++){
     s=s+songs[i]["artist"]+": "+songs[i]["title"]+"\n"
   }
+  return s
 }
