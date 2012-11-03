@@ -1,13 +1,14 @@
-var songs = {}
-var done = false;
+var songs = {};
+ready = false;
+done = false;
 
 $(document).ready(
   function() {
     insert_button()
-    setInterval(function(){console.log("scraping");scrapePage();},60000);
-    $("#illegal_spotify_button").click(
+    setInterval(function(){console.log("scraping");scrapePage();},7000);
+    $("#spotify_prev_button").click(
       function(){
-        //stuff to do when clicked button
+        //stuff to do when clicked prev button
         //create a spotify playlist out of the songs
         alert("Creating a Spotify playlist of the current tracks!")
         console.log(songsToPlaylist())
@@ -15,7 +16,7 @@ $(document).ready(
         //open_in_new_tab(songsToPlaylist())
       }     
       );
-    $("#spotify_button").click(
+    $("#spotify_all_button").click(
       function(){
         //stuff to do when clicked button
         //create a spotify playlist out of the songs
@@ -67,9 +68,21 @@ function track_uri(track, artist){
 
 
 function insert_button(){
-  var icon_address = chrome.extension.getURL("icon.png");
+  var icon_start_address = chrome.extension.getURL("icon_start.png");
   $("#mix_interactions").append(
-    '<img id="spotify_button" src='+ icon_address +' alt="some_text">')
+    '<img id="spotify_prev_button" src='+ 
+    icon_start_address +' alt="some_text">')
+  var icon_all_address = chrome.extension.getURL("icon_all.png");
+  $("#mix_interactions").append(
+    '<img id="spotify_all_button" src='+ 
+    icon_all_address +' alt="some_text">')
+}
+
+function readyButton(){
+  var icon_prev_address = chrome.extension.getURL("icon_prev.png");
+  //$("#spotify_prev_button").attr('src')=icon_prev_address;
+  $("#spotify_prev_button").attr('src', icon_prev_address);
+  console.log("image changed")
 }
 
 function scrapePage(){
@@ -99,6 +112,10 @@ function scrapePage(){
       songs[idx] = song
     }
   });  
+  if(ready==false && songs[0]){
+    ready = true;
+    readyButton();
+  }
 };
 
 function songsToString(){

@@ -1,6 +1,6 @@
 {
   "name": "8trhacker",
-  "version": "0.1",
+  "version": "17.3",
   "description": "Make Spotify playlists from 8tracks playlists",
   "content_scripts": [
     {
@@ -9,7 +9,9 @@
     }
   ],
   "web_accessible_resources": [
-    "icon.png"
+    "icon_all.png",
+    "icon_prev.png",
+    "icon_start.png"
   ],
   "manifest_version": 2
 }
