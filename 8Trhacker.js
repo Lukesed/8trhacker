@@ -1,9 +1,10 @@
 var songs = {}
+var done = false;
 
 $(document).ready(
   function() {
     insert_button()
-    setInterval(function(){console.log("scraping");scrapePage();},7000);
+    setInterval(function(){console.log("scraping");scrapePage();},60000);
     $("#illegal_spotify_button").click(
       function(){
         //stuff to do when clicked button
@@ -19,7 +20,21 @@ $(document).ready(
         //stuff to do when clicked button
         //create a spotify playlist out of the songs
         alert("Creating a Spotify playlist of the entire playlist!")
-        console.log(entire_mix_to_playlist())
+        if(done){
+          //alert("done")
+          //clearInterval(makingPlaylist)
+          open_in_new_tab(songsToPlaylist());
+        }
+        making_playlist = setInterval(function(){
+          if(!done){
+            $("#player_skip_button").trigger('click');
+            entire_mix_to_playlist();
+            console.log("getting playlist");
+            //alert(done)
+          }else{
+            clearInterval(making_playlist)
+            open_in_new_tab(songsToPlaylist());
+          }},1000);
         //open_in_new_tab(entire_mix_to_playlist());
         //open_in_new_tab(songsToPlaylist())
       }     
@@ -108,15 +123,20 @@ function songsToPlaylist(){
 
 function entire_mix_to_playlist(){
   scrapePage()
-  alert("getting mix")
+  //alert("getting mix")
   var tracks_span = $('span:contains("tracks"):first');
   var num_tracks = tracks_span.text().match(/\d+/);
-  var remaining_tracks = num_tracks - songs.length
-  var starting_songs_length = songs.length
-  alert("Total tracks in mix: " + num_tracks);
-  alert("Remaining tracks: " + remaining_tracks);
-  for(i=starting_songs_length;i<num_tracks;i++){
-    $("#now_playing .title_artist").each()
+  var remaining_tracks = num_tracks - Object.keys(songs).length
+  //alert(remaining_tracks)
+  if (remaining_tracks < 2){
+    done = true;
+  }
+  var starting_songs_length = Object.keys(songs).length
+  //alert("Total tracks in mix: " + num_tracks);
+  //alert("Remaining tracks: " + remaining_tracks);
+  var i = starting_songs_length
+  console.log("adding song!")
+  $("#now_playing .title_artist").each(function(){
     var song = {}
     $(this).children().each(function(index){
       if (index == 0){
@@ -136,10 +156,11 @@ function entire_mix_to_playlist(){
     });
     href = track_uri(song["title"],song["artist"])
     song["uri"] = href
-    alert(song["artist"]+": "+song["title"])
-    songs[idx] = song
-    $("#player_skip_button").click();
-  }
+    if (!(i in songs)){
+      songs[i] = song
+      //alert(songsToString())
+    }
+  });
 }
 
 
