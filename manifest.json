@@ -10,7 +10,8 @@
   ],
   "web_accessible_resources": [
     "icon_all.png",
-    "icon_prev.png"
+    "icon_prev.png",
+    "icon_start.png"
   ],
   "manifest_version": 2
 }

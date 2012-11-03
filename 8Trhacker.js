@@ -1,4 +1,5 @@
-var songs = {}
+var songs = {};
+ready = false;
 
 $(document).ready(
   function() {
@@ -47,14 +48,21 @@ function track_uri(track, artist){
 
 
 function insert_button(){
-  var icon_prev_address = chrome.extension.getURL("icon_prev.png");
+  var icon_start_address = chrome.extension.getURL("icon_start.png");
   $("#mix_interactions").append(
     '<img id="spotify_prev_button" src='+ 
-    icon_prev_address +' alt="some_text">')
+    icon_start_address +' alt="some_text">')
   var icon_all_address = chrome.extension.getURL("icon_all.png");
   $("#mix_interactions").append(
     '<img id="spotify_all_button" src='+ 
     icon_all_address +' alt="some_text">')
+}
+
+function readyButton(){
+  var icon_prev_address = chrome.extension.getURL("icon_prev.png");
+  //$("#spotify_prev_button").attr('src')=icon_prev_address;
+  $("#spotify_prev_button").attr('src', icon_prev_address);
+  console.log("image changed")
 }
 
 function scrapePage(){
@@ -86,6 +94,11 @@ function scrapePage(){
     }
   });  
   console.log(songsToString())
+  console.log("length " + ready)
+  if(ready==false && songs[0]){
+    ready = true;
+    readyButton();
+  }
 };
 
 function songsToString(){
@@ -106,7 +119,7 @@ function songsToPlaylist(){
   output = s.substring(0, s.length-1)
   console.log("spotify url"+output)
   return output
-  //return "spotify:trackset:PlaylistName:49MsPNQCOmxvIYi9AdoPzY,6fUlrsHaz4QfCNF31rk2dU,5KiTsR2h8jnzkvTeucxoAn,6kidUwWb8tB9ktfy7U76iX,6mlUEdb90RqwUisnp65lG7,6KOEK6SeCEZOQkLj5M1PxH,3psrcZoGRaWh6FMGael1NX,3EHLii6bnZxJxsCfLlIb83,0xJtHBdhpdLuClaSQYddI4,6fsdOFwa9lTG7WKL9sEWRU"
+  //return "spotify:trackset:PlaylistName:49MsPNQCOmxvIYi9AdoPzY,6fUlrsHaz4QfCNF31rk2dU"
 }
 
 
