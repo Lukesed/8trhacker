@@ -9,20 +9,20 @@ $(document).ready(
     $("#spotify_prev_button").click(
       function(){
         //stuff to do when clicked prev button
-        //create a spotify playlist out of the songs
-        alert("Creating a Spotify playlist of the current tracks!")
-        console.log(songsToPlaylist())
-        open_in_new_tab(songsToPlaylist());
-        //open_in_new_tab(songsToPlaylist())
-      }     
-      );
+        if(ready){
+          //create a spotify playlist out of the songs
+          alert("Creating a Spotify playlist of the previous tracks!")
+          console.log(songsToPlaylist())
+          open_in_new_tab(songsToPlaylist());
+        }
+      }
+    );
     $("#spotify_all_button").click(
       function(){
         //stuff to do when clicked button
         //create a spotify playlist out of the songs
         alert("Creating a Spotify playlist of the entire playlist!")
         if(done){
-          //alert("done")
           //clearInterval(makingPlaylist)
           open_in_new_tab(songsToPlaylist());
         }
@@ -30,14 +30,10 @@ $(document).ready(
           if(!done){
             $("#player_skip_button").trigger('click');
             entire_mix_to_playlist();
-            console.log("getting playlist");
-            //alert(done)
           }else{
             clearInterval(making_playlist)
             open_in_new_tab(songsToPlaylist());
           }},1000);
-        //open_in_new_tab(entire_mix_to_playlist());
-        //open_in_new_tab(songsToPlaylist())
       }     
       );    
   }
@@ -56,13 +52,10 @@ function track_uri(track, artist){
     success:
     function(json){
       if(json["tracks"].length!=0){
-        console.log(json["tracks"])
-        uri = json["tracks"][0]["href"].split(":")[2]
-        console.log(uri)
+        uri = json["tracks"][0]["href"].substring(14)
       }
     } 
   });
-  console.log("2: " + uri)
   return uri;
 }
 
@@ -84,6 +77,19 @@ function readyButton(){
   console.log("image changed")
 }
 
+//removes anything between parentheses, and removes '&' symbols.
+function sanitize(raw){
+  open_paran = raw.indexOf("(")
+  close_paran = raw.title.lastIndexOf(")")
+  if( open!=-1 && close!=-1 ){
+    fixed = raw.substring(0,open_paran-1) +
+    raw.substring(close_paran+1,raw.length)
+  } else {
+    fixed = raw
+  }
+  return fixed.replace("&", " ")
+}
+
 function scrapePage(){
   $("#tracks_played .track .title_artist").each(function(idx){
     if (!(idx in songs)){
@@ -91,24 +97,16 @@ function scrapePage(){
       var song = {}
       $(this).children().each(function(index){
         if (index == 0){
-          raw_title = $(this).text()
-          open_paran = raw_title.indexOf("(")
-          close_paran = raw_title.lastIndexOf(")")
-          if( open!=-1 && close!=-1 ){
-            fixed = raw_title.substring(0,open_paran-1) +
-            raw_title.substring(close_paran+1,raw_title.length)
-          } else {
-            fixed = raw_title
-          }
-          song["title"] = fixed.replace("&", " ")
+          song["title"] = sanitize($(this).text())
         }else{
-          song["artist"] = $(this).text().replace("&", " ")
+          song["artist"] = sanitize($(this).text())
         }
       });
       href = track_uri(song["title"],song["artist"])
       song["uri"] = href
-      //alert(song["artist"]+": "+song["title"])
+      console.log("added "+song["artist"]+": "+song["title"])
       songs[idx] = song
+      console.log(Object.keys(songs).length+"th song added")
     }
   });  
   if(ready==false && songs[0]){
@@ -133,7 +131,7 @@ function songsToPlaylist(){
     }
   }
   output = s.substring(0, s.length-1)
-  console.log("spotify url"+output)
+  console.log("spotify url "+output)
   return output
 }
 
@@ -170,9 +168,9 @@ function entire_mix_to_playlist(){
         song["artist"] = $(this).text().replace("&", " ")
       }
     });
-    href = track_uri(song["title"],song["artist"])
-    song["uri"] = href
     if (!(i in songs)){
+      href = track_uri(song["title"],song["artist"])
+      song["uri"] = href
       songs[i] = song
       //alert(songsToString())
     }
