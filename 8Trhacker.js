@@ -80,7 +80,7 @@ function readyButton(){
 //removes anything between parentheses, and removes '&' symbols.
 function sanitize(raw){
   open_paran = raw.indexOf("(")
-  close_paran = raw.title.lastIndexOf(")")
+  close_paran = raw.lastIndexOf(")")
   if( open!=-1 && close!=-1 ){
     fixed = raw.substring(0,open_paran-1) +
     raw.substring(close_paran+1,raw.length)
