@@ -5,7 +5,7 @@ done = false;
 $(document).ready(
   function() {
     insert_button()
-    setInterval(function(){console.log("scraping");scrapePage();},7000);
+    setInterval(function(){console.log("scraping");scrapePage();},40000);
     $("#spotify_prev_button").click(
       function(){
         //stuff to do when clicked prev button
