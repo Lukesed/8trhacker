@@ -18,7 +18,7 @@ executeBrowserContext(function(){
 			var target = evt.target;
 			switch(evt.type){
 				case 'click':
-					if(target.id === 'player_skip_button' && !evt.button){
+					if(target.id === 'player_skip_button_invisible' && !evt.button){
 						this.skip();
 						evt.preventDefault();
 						evt.stopPropagation();

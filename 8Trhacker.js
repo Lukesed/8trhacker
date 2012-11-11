@@ -4,19 +4,28 @@ done = false;
 
 $(document).ready(
   function() {
+    // Insert the new buttons into the 8tracks page
     insert_button()
-    setInterval(function(){console.log("scraping");scrapePage();},40000);
+    // Every 40 seconds, scrape the page to get previously played songs
+    setInterval(function(){console.log("scraping");scrapePage();},7000);
+    
+    // When a user clicks the 'prev' button, 
     $("#spotify_prev_button").click(
       function(){
         //stuff to do when clicked prev button
+        var ready = ($("#spotify_prev_button").attr('src') == chrome.extension.getURL("icon_prev.png"))
         if(ready){
           //create a spotify playlist out of the songs
           alert("Creating a Spotify playlist of the previous tracks!")
+          // Scrape page one more time to make sure we have all the songs
+          scrapePage()
+          alert(songsToString())
           console.log(songsToPlaylist())
           open_in_new_tab(songsToPlaylist());
         }
       }
     );
+    
     $("#spotify_all_button").click(
       function(){
         //stuff to do when clicked button
@@ -28,7 +37,7 @@ $(document).ready(
         }
         making_playlist = setInterval(function(){
           if(!done){
-            $("#player_skip_button").trigger('click');
+            $("#player_skip_button_invisible").trigger('click');
             entire_mix_to_playlist();
           }else{
             clearInterval(making_playlist)
@@ -63,12 +72,15 @@ function track_uri(track, artist){
 function insert_button(){
   var icon_start_address = chrome.extension.getURL("icon_start.png");
   $("#mix_interactions").append(
-    '<img id="spotify_prev_button" src='+ 
-    icon_start_address +' alt="some_text">')
+    '<img id="spotify_prev_button" src='+icon_start_address+'>')
   var icon_all_address = chrome.extension.getURL("icon_all.png");
   $("#mix_interactions").append(
-    '<img id="spotify_all_button" src='+ 
-    icon_all_address +' alt="some_text">')
+    '<img id="spotify_all_button" src='+icon_all_address+'>')
+  // Here we insert a button that is invisible to users
+  // but is used by the script to skip tracks.
+  $("#mix_interactions").append(
+      '<img id="player_skip_button_invisible" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
+      
 }
 
 function readyButton(){
@@ -77,13 +89,13 @@ function readyButton(){
   console.log("image changed")
 }
 
-//removes anything between parentheses, and removes '&' symbols.
+// removes anything between parentheses, and removes '&' symbols.
 function sanitize(raw){
-  open_paran = raw.indexOf("(")
-  close_paran = raw.lastIndexOf(")")
+  open_paren = raw.indexOf("(")
+  close_paren = raw.lastIndexOf(")")
   if( open!=-1 && close!=-1 ){
-    fixed = raw.substring(0,open_paran-1) +
-    raw.substring(close_paran+1,raw.length)
+    fixed = raw.substring(0,open_paren-1) +
+    raw.substring(close_paren+1,raw.length)
   } else {
     fixed = raw
   }
@@ -109,8 +121,8 @@ function scrapePage(){
       console.log(Object.keys(songs).length+"th song added")
     }
   });  
-  if(ready==false && songs[0]){
-    ready = true;
+  if (songs[0] && $("#spotify_prev_button").attr('src') != chrome.extension.getURL("icon_prev.png")){
+    alert("changing button")
     readyButton();
   }
 };
@@ -183,3 +195,22 @@ function open_in_new_tab(url )
   window.open(url, '_blank');
   window.focus();
 }
+
+
+var onFooEndFunc = function() {
+  var delay = 50; /* milliseconds - vary as desired */
+  var executionTimer;
+
+  return function() {
+    if (executionTimer) {
+      clearTimeout(executionTimer);
+    }
+
+    executionTimer = setTimeout(function() {
+      // YOUR CODE HERE
+    }, delay);
+  };
+}();
+
+
+
