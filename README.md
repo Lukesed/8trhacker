@@ -1,0 +1,3 @@
+Spotify allows users to listen to a huge library of songs on demand, but discovering good new music can be difficult. 8tracks has a wide variety of curated playlists created and reviewed by users, but playlists can only be listened to sequentially, songs' titles are not revealed until they begin playing, and skips are limited.
+
+8trhacker dumps 8tracks playlists into your Spotify queue, where you can listen to the songs whenever you want, make a Spotify playlist, share with your friends, etc.
