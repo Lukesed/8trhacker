@@ -4,61 +4,50 @@ $(document).ready(
     var songs = {};
     // Insert the new buttons into the 8tracks page
     insert_button()
-    // Every 40 seconds, scrape the page to get previously played songs
-    setInterval(function(){scrapePage(songs);},40000);
+    if ($("#play_area").length == 1){
+      playedLength = $("#tracks_played .track .title_artist").length;
+      // Compare the current length of the played list with the actual length
+      var checker = setInterval(function(){playedLength = checkLength(playedLength,songs);},1000);
+    }
 
+    // Create a spotify playlist out of previously played songs in the mix
     $("#spotify_prev_button").click(
       function(){
-        // Check to see if any songs have finished playing yet
-        var ready = ($("#spotify_prev_button").attr('src') == chrome.extension.getURL("icon_prev.png"))
-        if(ready){
-          // Create a spotify playlist out of previously played songs in the mix
-          alert("Creating a Spotify playlist of the previous tracks!")
-          window.open(songsToPlaylist(songs), '_self');
-        }
+        scrapePage(songs)
+        alert("Creating a Spotify playlist of the previous tracks!")
+        var list = songsToPlaylist(songs)
+        openSpotify(list)
       }
     );
-
+    // Create a spotify playlist out of all of the songs in the mix
     $("#spotify_all_button").click(
       function(){
         alert("Creating a Spotify playlist of the entire mix!")
-        scrapePage(songs)
         var tracksSpan = $('span:contains("tracks"):first');
         var numTracks = tracksSpan.text().match(/\d+/);
         var remainingTracks = numTracks - Object.keys(songs).length + 1
-        
+
         var makingPlaylist = setInterval(function(){
           if (remainingTracks > 0){
             $("#player_skip_button_invisible").trigger('click');
             remainingTracks -= 1
           }else{
+            alert(songsToString(songs))
             clearInterval(makingPlaylist)
-            window.open(songsToPlaylist(songs), '_self');
+            var list = songsToPlaylist(songs)
+            openSpotify(list)
           }
-        },1000);    
+        },1000);   
       });
   }
 );
 
 function scrapePage(songs){
   console.log("checking for new songs!")
-  requestStack = new Array()
+  var requestStack = new Array()
   // First scrape the page and add each new song to the request stack
-  $("#tracks_played .track .title_artist").each(function(idx){
-    if (!(idx in songs)){
-      console.log("adding song!")
-      var song = {}
-      song["trackNum"] = idx
-      $(this).children().each(function(index){
-        if (index == 0){
-          song["title"] = sanitize($(this).text())
-        }else{
-          song["artist"] = sanitize($(this).text())
-        }
-      });
-      requestStack.push(song)
-    }
-  });  
+  var listLen = getSongsFromList(songs,requestStack)
+  getSongNowPlaying(songs,requestStack,listLen)
   // In order to prevent rate limiting by Spotify, we limit ourselves to
   // 10 api requests per second
   var preventRateLimiting = setInterval(function() {
@@ -67,15 +56,53 @@ function scrapePage(songs){
       song["uri"] = track_uri(song["title"],song["artist"])
       console.log("added "+song["artist"]+": "+song["title"])
       songs[song["trackNum"]] = song
-      console.log(Object.keys(songs).length+"th song added")
+      console.log(song["trackNum"]+"th song added")
     }else{
       clearInterval(preventRateLimiting)
     }
   }, 100);
-  if (songs[0] && $("#spotify_prev_button").attr('src') != chrome.extension.getURL("icon_prev.png")){
-    readyButton();
-  }
 };
+
+function getSongsFromList(songs,requestStack){
+  listLen = 0
+  $("#tracks_played .track .title_artist").each(function(idx){
+    if (!(idx in songs)){
+      console.log("adding new song")
+      var song = {}
+      $(this).children().each(function(index){
+        if (index == 0){
+          song["title"] = sanitize($(this).text())
+        }else{
+          song["artist"] = sanitize($(this).text())
+        }
+      });
+      song["trackNum"] = idx
+      requestStack.push(song)
+    }
+    listLen += 1
+  }); 
+  return listLen
+} 
+
+
+function getSongNowPlaying(songs,requestStack,listLen){
+  $("#now_playing .title_artist").each(function(idx){
+    if (!(listLen in songs)){
+      console.log("adding new song")
+      var song = {}
+      $(this).children().each(function(index){
+        if (index == 0){
+          song["title"] = sanitize($(this).text())
+        }else{
+          song["artist"] = sanitize($(this).text())
+        }
+      });
+      song["trackNum"] = listLen
+      requestStack.push(song)
+    }
+  }); 
+} 
+
 
 // Useful helper function for checking what's in the songs dictionary
 function songsToString(songs){
@@ -125,7 +152,7 @@ function track_uri(track, artist){
 
 // Inserts our custom controls for transforming 8tracks mixes into Spotify playlists
 function insert_button(){
-  var icon_start_address = chrome.extension.getURL("icon_start.png");
+  var icon_start_address = chrome.extension.getURL("icon_prev.png");
   $("#mix_interactions").append(
     '<img id="spotify_prev_button" src='+icon_start_address+'>')
   var icon_all_address = chrome.extension.getURL("icon_all.png");
@@ -135,12 +162,6 @@ function insert_button(){
   // but is used by the script to skip tracks
   $("#mix_interactions").append(
       '<img id="player_skip_button_invisible" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');    
-}
-
-// Changes the image of the 'prev' button when the first track has finished playing
-function readyButton(){
-  var icon_prev_address = chrome.extension.getURL("icon_prev.png");
-  $("#spotify_prev_button").attr('src', icon_prev_address);
 }
 
 // Removes anything between parentheses and '&' symbols.
@@ -156,3 +177,17 @@ function sanitize(raw){
   return fixed.replace("&", " ")
 }
 
+function checkLength(playedLength,songs){
+  console.log(playedLength)
+  newLength = $("#tracks_played .track .title_artist").length 
+  if (newLength > playedLength || Object.keys(songs).length == 0){
+    scrapePage(songs);
+    playedLength = newLength;
+  }
+  return playedLength;
+}
+
+
+function openSpotify(list){
+  window.open(list, '_self');
+}
