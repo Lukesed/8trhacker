@@ -14,7 +14,7 @@ $(document).ready(
     $("#spotify_prev_button").click(
       function(){
         scrapePage(songs)
-        alert("Creating a Spotify playlist of the previous tracks!")
+        alert("Creating a Spotify playlist of the previously played tracks!")
         var list = songsToPlaylist(songs)
         openSpotify(list)
       }
@@ -22,28 +22,28 @@ $(document).ready(
     // Create a spotify playlist out of all of the songs in the mix
     $("#spotify_all_button").click(
       function(){
-        alert("Creating a Spotify playlist of the entire mix!")
-        var tracksSpan = $('span:contains("tracks"):first');
-        var numTracks = tracksSpan.text().match(/\d+/);
-        var remainingTracks = numTracks - Object.keys(songs).length + 1
+        var cont = confirm("This will create a Spotify playlist of the entire mix by skipping through all the tracks! \nWe encourage you to listen to the whole mix on 8tracks first, and then click the 'Open played songs in Spotify' button. \nBut you can use this button if you're in a hurry :)");
+        if (cont){
+          var tracksSpan = $('span:contains("tracks"):first');
+          var numTracks = tracksSpan.text().match(/\d+/);
+          var remainingTracks = numTracks - Object.keys(songs).length + 1
 
-        var makingPlaylist = setInterval(function(){
-          if (remainingTracks > 0){
-            $("#player_skip_button_invisible").trigger('click');
-            remainingTracks -= 1
-          }else{
-            alert(songsToString(songs))
-            clearInterval(makingPlaylist)
-            var list = songsToPlaylist(songs)
-            openSpotify(list)
-          }
-        },1000);   
+         var makingPlaylist = setInterval(function(){
+           if (remainingTracks > 0){
+             $("#player_skip_button_invisible").trigger('click');
+              remainingTracks -= 1
+            }else{
+             clearInterval(makingPlaylist)
+             var list = songsToPlaylist(songs)
+              openSpotify(list)
+            }
+          },1000);   
+       }
       });
   }
 );
 
 function scrapePage(songs){
-  console.log("checking for new songs!")
   var requestStack = new Array()
   // First scrape the page and add each new song to the request stack
   var listLen = getSongsFromList(songs,requestStack)
@@ -54,9 +54,7 @@ function scrapePage(songs){
     if (requestStack.length > 0){
       song = requestStack.pop()
       song["uri"] = track_uri(song["title"],song["artist"])
-      console.log("added "+song["artist"]+": "+song["title"])
       songs[song["trackNum"]] = song
-      console.log(song["trackNum"]+"th song added")
     }else{
       clearInterval(preventRateLimiting)
     }
@@ -67,7 +65,6 @@ function getSongsFromList(songs,requestStack){
   listLen = 0
   $("#tracks_played .track .title_artist").each(function(idx){
     if (!(idx in songs)){
-      console.log("adding new song")
       var song = {}
       $(this).children().each(function(index){
         if (index == 0){
@@ -88,7 +85,6 @@ function getSongsFromList(songs,requestStack){
 function getSongNowPlaying(songs,requestStack,listLen){
   $("#now_playing .title_artist").each(function(idx){
     if (!(listLen in songs)){
-      console.log("adding new song")
       var song = {}
       $(this).children().each(function(index){
         if (index == 0){
@@ -125,7 +121,6 @@ function songsToPlaylist(songs){
     }
   }
   output = s.substring(0, s.length-1)
-  console.log("spotify url "+output)
   return output
 }
 
@@ -134,7 +129,6 @@ function songsToPlaylist(songs){
 function track_uri(track, artist){
   search_url = encodeURI('http://ws.spotify.com/search/1/track.json?q=track:'
     +track+'+artist:' +artist);
-  console.log(search_url)
   var uri = ""
   $.ajax({
     url: search_url,
@@ -178,7 +172,6 @@ function sanitize(raw){
 }
 
 function checkLength(playedLength,songs){
-  console.log(playedLength)
   newLength = $("#tracks_played .track .title_artist").length 
   if (newLength > playedLength || Object.keys(songs).length == 0){
     scrapePage(songs);
@@ -186,7 +179,6 @@ function checkLength(playedLength,songs){
   }
   return playedLength;
 }
-
 
 function openSpotify(list){
   window.open(list, '_self');
