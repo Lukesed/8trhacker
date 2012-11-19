@@ -97,7 +97,7 @@ function getSongNowPlaying(songs,requestStack,listLen){
       requestStack.push(song);
     }
   }); 
-} 
+}
 
 // Useful helper function for checking what's in the songs dictionary
 function songsToString(songs){
