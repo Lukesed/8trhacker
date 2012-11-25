@@ -6,7 +6,7 @@
   "content_scripts": [
     {
       "matches": ["http://8tracks.com/*"],
-      "js": ["jquery-1.7.2.min.js","8Trhacker.js","skiptracks.js"]
+      "js": ["jquery-1.6.2.min.js","8Trhacker.js","skiptracks.js"]
     }
   ],
   "icons": { "16": "icon16.png",
