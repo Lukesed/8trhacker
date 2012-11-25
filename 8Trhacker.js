@@ -8,7 +8,8 @@ $(document).ready(
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
       ga.src = 'https://ssl.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
     })();
 
     // Initialize our empty songs container
@@ -24,6 +25,7 @@ $(document).ready(
     // Create a spotify playlist out of previously played songs in the mix
     $("#spotify_prev_button").click(
       function(){
+        _gaq.push(['_trackEvent', 'played_songs', 'clicked']);
         scrapePage(songs);
         alert("Creating a Spotify playlist of the previously played tracks!")
         var list = songsToPlaylist(songs);
@@ -35,13 +37,14 @@ $(document).ready(
       function(){
         var cont = confirm("This will create a Spotify playlist of the entire mix by skipping through all the tracks! \nWe encourage you to listen to the whole mix on 8tracks first, and then click the 'Open played songs in Spotify' button. \nBut you can use this button if you're in a hurry :)");
         if (cont){
+          _gaq.push(['_trackEvent', 'all_songs', 'clicked']);
           var tracksSpan = $('span:contains("tracks"):first');
           var numTracks = tracksSpan.text().match(/\d+/);
           var remainingTracks = numTracks - Object.keys(songs).length + 1;
 
-         var makingPlaylist = setInterval(function(){
-           if (remainingTracks > 0){
-             $("#player_skip_button_invisible").trigger('click');
+          var makingPlaylist = setInterval(function(){
+            if (remainingTracks > 0){
+              $("#player_skip_button_invisible").trigger('click');
               remainingTracks -= 1;
             }else{
               clearInterval(makingPlaylist);
@@ -49,8 +52,9 @@ $(document).ready(
               openSpotify(list);
             }
           },1000);   
-       }
-      });
+        }
+      }
+    );
   }
 );
 
